@@ -1,0 +1,130 @@
+/* Reset gaya bawaan */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+/* Kontainer utama */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-left: 220px; /* Beri margin untuk menghindari sidebar */
+}
+
+header h1 {
+  font-size: 18px;
+  color: #333;
+}
+
+.logout-button {
+  padding: 10px 15px;
+  background-color: #ccc;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: red;
+  color: #fff;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  background-color: #fff;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  height: 100vh;
+  padding: 20px;
+  position: fixed; /* Jadikan sidebar tetap di sisi kiri */
+  top: 0;
+  left: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  background-color: #ddd;
+  padding: 5px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  display: block;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.sidebar ul li a:hover {
+  background-color: #eee;
+}
+
+/* Main content */
+main {
+  margin-left: 220px; /* Beri margin agar tidak terhalang sidebar */
+  padding: 20px;
+  flex: 1;
+}
+
+.stats-box {
+  background-color: #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stats-box h2 {
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.stats-box p {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.transaksi button{
+  font-size: 20px;
+  background-color: #4caf50;
+  color: #fff;
+  padding: 1px 1px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+#beli-button {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#jual-button {
+  background-color: #af4c4c;
+}

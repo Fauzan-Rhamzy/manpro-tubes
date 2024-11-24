@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style-tambah-pengguna.css') }}">
+      <title>Tambah Pengguna</title>
+  </head>
+  <body>
+      <div class="container">
+          <h1>Tambah Pengguna</h1>
+          <form id="penggunaForm" method="post">
+            <label for="nama">Nama</label>
+            <input type="text" id="nama" name="nama" placeholder="Masukkan nama" 
+                   value="{{ request.args.get('nama', '') }}" required>
+            
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Masukkan email" 
+                   value="{{ request.args.get('email', '') }}" required>
+
+            <label for="telepon">Telepon</label>
+            <input type="number" id="telepon" name="telepon" placeholder="Masukkan nomor telepon" 
+                  value="{{ request.args.get('telepon', '') }}" required>
+            
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Masukkan username" 
+                   value="{{ request.args.get('username', '') }}" required>
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Masukkan password" 
+                   value="{{ request.args.get('password', '') }}" required>
+
+              <label for="role">Role</label>
+              <select name="role" id="role" required>
+                  <option value="0" {% if request.args.get('role') == "0" or request.args.get('role') is none %}selected{% endif %}>
+                      Pilih Role
+                  </option>
+                  <option value="admin" {% if request.args.get('role') == "admin" %}selected{% endif %}>
+                      Admin
+                  </option>
+                  <option value="member" {% if request.args.get('role') == "member" %}selected{% endif %}>
+                      Member
+                  </option>
+              </select>
+
+            <label for="alamat">Alamat</label>
+            <input type="text" id="alamat" name="alamat" placeholder="Masukkan alamat" 
+                   value="{{ request.args.get('alamat', '') }}" required>
+        
+              <label for="kecamatan">Kecamatan</label>
+              <select name="kecamatan" id="kecamatan" placeholder="Masukkan kecamatan" required>
+                <option value="">Pilih Kecamatan</option>
+                {% for item in kecamatan %}
+                <option value="{{ item.id }}" {% if item.id == request.args.get('kecamatan')|int %}selected{% endif %}>
+                  {{ item.nama }}
+                </option>
+                {% endfor %}
+              </select>
+              <br>
+              
+              <label for="kelurahan">Kelurahan</label>
+              <select name="kelurahan" id="kelurahan" placeholder="Masukkan kelurahan" required>
+                <option value="">Pilih Kelurahan</option>
+                {% for item in kelurahan %}
+                <option value="{{item.id}}">{{item.nama}}</option>
+                {% endfor %}
+              </select>
+
+                <div class="buttons">
+                  <button type="button" onclick="location.href='index.html'">Kembali</button>
+                  <button type="submit">Simpan</button>
+              </div>
+          </form>
+      </div>
+
+      <script>
+          document.getElementById('kecamatan').addEventListener('change', function () {
+          const kecamatanId = this.value;
+          const form = document.getElementById('penggunaForm');
+          const formData = new FormData(form);
+          const queryString = new URLSearchParams(formData).toString();
+          window.location.href = `/tambah_pengguna?${queryString}&kecamatan=${kecamatanId}`;
+          });
+      </script>        
+  </body>
+</html>

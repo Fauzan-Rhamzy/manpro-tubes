@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-tambah-kelurahan.css') }}">
+    <title>Tambah Kelurahan</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Tambah Data Kelurahan</h1>
+        <form id="kelurahanForm" method="post">
+            <label for="nama">Nama Kelurahan</label>
+            <input type="text" id="nama" name="nama" placeholder="Masukkan nama Kelurahan" required>
+
+            <label for="kecamatan">Kecamatan</label>
+            <select name="kecamatan" id="kecamatan" required>
+              <option value="">Pilih Kecamatan</option>
+              {% for item in kecamatan %}
+              <option value={{item.id}}>{{item.nama}}</option>
+              {% endfor %}
+            </select>      
+
+            <div class="buttons">
+                <button type="button" onclick="location.href='index.html'">Kembali</button>
+                <button type="submit">Simpan</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

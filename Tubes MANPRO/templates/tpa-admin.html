@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data TPA</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style-tpa-admin.css') }}">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>Data TPA</h1>
+      {% include 'logoutFragment.html' %}
+    </header>
+    
+    <!-- Sidebar -->
+    {% include 'sidebarFragment.html' %}
+    
+    <!-- Main Content -->
+    <main>
+      <div class="search-bar">
+        <form method="get">
+          <input type="text" id="search" name="nama_tpa" placeholder="Cari nama tpa">
+          <button type="submit" id="search-button"> Cari</button>
+        </form>
+        <br>
+        <button id="add-button" onclick="window.location.href='tambah_tpa';">Tambah TPA</button>
+
+      </div>
+      <br>
+        
+      <table>
+          <tr>
+              <th>ID</th>
+              <th>Nama TPA</th>
+          </tr>
+          {% for item in tpa %}
+          <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.nama }}</td>
+          </tr>
+          {% endfor %}
+      </table>
+    </main>
+  </div>
+</body>
+</html>

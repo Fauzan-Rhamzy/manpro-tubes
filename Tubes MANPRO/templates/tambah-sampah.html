@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-tambah-sampah.css') }}">
+    <title>Tambah Sampah</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Tambah Sampah</h1>
+        <form id="sampahForm" method="post">
+            <label for="nama">Nama Sampah</label>
+            <input type="text" id="nama" name="nama" placeholder="Masukkan nama sampah" required>
+
+            <label for="unit">Unit Sampah</label>
+            <input type="text" id="unit" name="unit" placeholder="Masukkan unit (contoh: kg, pc)" required>
+
+            <label for="harga">Harga Sampah</label>
+            <input type="number" id="harga" name="harga" placeholder="Masukkan harga sampah" required>
+
+            <div class="buttons">
+                <button type="button" onclick="location.href='sampah'">Kembali</button>
+                <button type="submit">Simpan</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
