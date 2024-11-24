@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Kelurahan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style-kelurahan-admin.css') }}">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>Data Kelurahan</h1>
+      {% include 'logoutFragment.html' %}
+    </header>
+    
+    <!-- Sidebar -->
+    {% include 'sidebarFragment.html' %}
+    
+    <!-- Main Content -->
+    <main>
+      <div class="search-bar">
+        <form method="get">
+          <input type="text" id="search" name="nama_kelurahan" placeholder="Cari nama kelurahan">
+          <button type="submit" id="search-button"> Cari</button>
+        </form>
+        <br>
+        <button id="add-button" onclick="window.location.href='tambah_kelurahan';">Tambah Kelurahan</button>
+
+      </div>
+      <br>
+        
+      <table>
+          <tr>
+              <th>ID</th>
+              <th>Nama Kelurahan</th>
+              <th>Kecamatan</th>
+          </tr>
+          {% for item in kelurahan %}
+          <tr>
+              <td>{{ item.id_kelurahan }}</td>
+              <td>{{ item.nama_kelurahan }}</td>
+              <td>{{item.nama_kecamatan}}</td>
+          </tr>
+          {% endfor %}
+      </table>
+    </main>
+  </div>
+</body>
+</html>

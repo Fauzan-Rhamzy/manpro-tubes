@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halaman Register</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style-register.css') }}">
+  <script src="{{ url_for('static', filename='css/style-register.css') }}"></script>
+</head>
+<body>
+  <div class="daftar-box">
+    <h2>Register</h2>
+    <form>
+      <label for="nama">Nama</label>
+      <input type="text" id="nama" name="nama" placeholder="Masukkan nama" required>
+
+      <label for="email">Email</label>
+      <input type="text" id="email" name="email" placeholder="Masukkan email" required>
+
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Masukkan username" required>
+      
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+
+      <label for="alamat">Alamat</label>
+      <input type="text" id="alamat" name="alamat" placeholder="Masukkan alamat" required>
+
+      <label for="kecamatan">Kecamatan</label>
+      <select name="kecamatan" id="kecamatan" placeholder="Masukkan kecamatan" required>
+        <option value="">Pilih Kecamatan</option>
+      </select> <br>
+      
+      <label for="kelurahan">Kelurahan</label>
+      <select name="kelurahan" id="kelurahan" placeholder="Masukkan kelurahan" required>
+        <option value="">Pilih Kelurahan</option>
+      </select> <br> <br>
+
+      
+      <div class="button-container">
+        <button type="button" class="back-button" onclick="history.back()">Kembali</button>
+        <button type="submit" class="daftar-button">Buat Akun</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

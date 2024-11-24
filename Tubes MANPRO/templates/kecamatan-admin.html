@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Kecamatan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style-kecamatan-admin.css') }}">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>Data Kecamatan</h1>
+      {% include 'logoutFragment.html' %}
+    </header>
+    
+    <!-- Sidebar -->
+    {% include 'sidebarFragment.html' %}
+    
+    <!-- Main Content -->
+    <main>
+      <div class="search-bar">
+        <form method="get">
+          <input type="text" id="search" name="nama_kecamatan" placeholder="Cari nama kecamatan">
+          <button type="submit" id="search-button"> Cari</button>
+        </form>
+        <br>
+        <button id="add-button" onclick="window.location.href='tambah_kecamatan';">Tambah Kecamatan</button>
+
+      </div>
+      <br>
+        
+      <table>
+          <tr>
+              <th>ID</th>
+              <th>Nama Kecamatan</th>
+          </tr>
+          {% for item in kecamatan %}
+          <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.nama }}</td>
+          </tr>
+          {% endfor %}
+      </table>
+    </main>
+  </div>
+</body>
+</html>
