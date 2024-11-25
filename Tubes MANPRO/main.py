@@ -12,6 +12,16 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row 
     return conn
 
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'register', 'static']
+    if 'nama' not in session and request.endpoint not in allowed_routes:
+        return redirect(url_for('login'))
+
+@app.route('/')
+def index():
+    return render_template('login.html')
+
 @app.route('/kecamatan', methods=['GET'])
 def kecamatan():
     conn = get_db_connection()
@@ -76,6 +86,165 @@ def home():
         return "<h1>Kamu adalah member</h1>"
     else:
         return redirect(url_for('login'))
+
+@app.route('/pengguna', methods=['GET'])
+def pengguna():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(request.args):
+        nama_pengguna = request.args.get('nama_pengguna')
+        print(nama_pengguna)
+        cursor.execute("SELECT * FROM penggunaView WHERE LOWER(nama) LIKE LOWER(?)", (f"%{nama_pengguna}%",))
+        pengguna_data = cursor.fetchall()
+        conn.close()
+    else:
+        cursor.execute("SELECT * FROM penggunaView")
+        pengguna_data = cursor.fetchall()
+        conn.close()
+    return render_template('pengguna-admin.html', pengguna=pengguna_data)
+
+@app.route('/tambah_pengguna', methods=['GET', 'POST'])
+def tambahpengguna():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if request.method == 'GET':
+        # Ambil semua data kecamatan
+        cursor.execute("SELECT * FROM Kecamatan")
+        kecamatan_data = cursor.fetchall()
+
+        # Ambil data kelurahan jika ada kecamatan yang dipilih
+        kecamatan_id = request.args.get('kecamatan')
+        data_kelurahan = []
+        if kecamatan_id:
+            cursor.execute("SELECT * FROM Kelurahan WHERE id_kecamatan=?", (kecamatan_id,))
+            data_kelurahan = cursor.fetchall()
+
+        conn.close()
+        return render_template(
+            'tambah-pengguna.html',
+            kecamatan=kecamatan_data,
+            kelurahan=data_kelurahan
+        )
+    else:
+        nama = request.form['nama']
+        email = request.form['email']
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+        telepon = request.form['telepon']
+        alamat = request.form['alamat']
+        kelurahan_id = request.form['kelurahan']
+        print(f"nama")
+        print(f"email")
+        print(f"username")
+        print(f"password")
+        print(f"role")
+        print(f"telepon")
+        print(f"alamat")
+        print(f"Kecamatan ID yang diterima: {kelurahan_id}")
+
+        nama_pengguna = request.form.get('nama')
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO pengguna (nama, email, username, password, role, telepon, alamat, id_kelurahan) VALUES (?,?,?,?,?,?,?,?)",
+            ((nama,email, username, password, role, telepon, alamat, kelurahan_id))
+        )
+        conn.commit()
+        conn.close()
+        print(nama_pengguna)
+        return redirect(url_for('pengguna'))
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if(request.method=='POST'):
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT username, role, nama FROM Pengguna WHERE username = ? AND password = ?", (username, password))
+        user = cursor.fetchone()
+
+        conn.close()
+
+        if user:
+            nama = user[2]
+            role = user[1]
+
+            session['nama'] = nama
+            session['role'] = role
+            return redirect(url_for('home'))
+        else:
+            return render_template('login.html', error="Username atau password salah!")
+    else:
+        return render_template('login.html')
+
+@app.route('/data_pembelian_sampah')
+def data_pembelian_sampah():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(request.args):
+        mulai = request.args.get('tgl-mulai')
+        akhir = request.args.get('tgl-akhir')
+
+        date_object_mulai = datetime.strptime(mulai, "%Y-%m-%d")
+        month_str_mulai = str(date_object_mulai.month).zfill(2)
+        day_str_mulai = str(date_object_mulai.day).zfill(2)
+        tanggal_mulai = str(date_object_mulai.year) + "" + month_str_mulai + "" + day_str_mulai
+
+        date_object_akhir = datetime.strptime(akhir, "%Y-%m-%d")
+        month_str_akhir = str(date_object_akhir.month).zfill(2)
+        day_str_akhir = str(date_object_akhir.day).zfill(2)
+        tanggal_akhir = str(date_object_akhir.year) + "" + month_str_akhir + "" + day_str_akhir
+
+        print(tanggal_mulai)
+        print(tanggal_akhir)
+        cursor.execute("SELECT * FROM DataBeliSampahView WHERE tanggal >= ? AND tanggal <= ?", (tanggal_mulai, tanggal_akhir))
+        setoran = cursor.fetchall()
+        conn.close()
+    else:
+        cursor.execute("SELECT * FROM DataBeliSampahView")
+        setoran = cursor.fetchall()
+        conn.close()
+    return render_template('data-beli-admin.html', setoran_member=setoran)
+
+@app.route('/sampah', methods=['GET'])
+def dataSampah():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(request.args):
+        nama_sampah = request.args.get('nama_sampah')
+        print(nama_sampah)
+        cursor.execute("SELECT * FROM Sampah WHERE LOWER(nama) LIKE LOWER(?)", (f"%{nama_sampah}%",))
+        sampah_data = cursor.fetchall()
+        conn.close()
+    else:
+        cursor.execute("SELECT * FROM Sampah")
+        sampah_data = cursor.fetchall()
+        conn.close() 
+    return render_template('sampah-admin.html', sampah=sampah_data)
+
+@app.route('/tambah_sampah', methods=['GET', 'POST'])
+def tembahSampah():
+    if(request.method=='GET'):
+        return render_template('tambah-sampah.html')
+    else:
+        nama_sampah = request.form.get('nama')
+        unit_sampah = request.form.get('unit')
+        harga_sampah = request.form.get('harga')
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO Sampah (nama, unit, harga) VALUES (?, ?, ?)",
+            (nama_sampah, unit_sampah, harga_sampah)
+        )
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('dataSampah'))
 
 @app.route('/data_penjualan_sampah')
 def data_penjualan_sampah():
