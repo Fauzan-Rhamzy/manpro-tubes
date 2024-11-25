@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-pembelian-sampah.css') }}">
+    <title>Beli Sampah</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Beli Sampah</h1>
+        <form method="post">
+            <label for="username">Username Member</label>
+            <input type="text" id="username" name="username" placeholder="Masukkan username member" required>
+
+            <table>
+                <tr>
+                    <th>Nama Sampah</th>
+                    <th>Satuan</th>
+                    <th>Kuanititas</th>
+                </tr>
+                {% for item in sampah %}
+                <tr>
+                    <td name="{{item.id}}">{{item.nama}}</td>
+                    <td>{{item.unit}}</td>
+                    <td><input type="number" class="kuantitas" name="kuantitas{{item.id}}"></td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <span id="container-total">
+                Total: Rp. <span id="total">0</span>
+            </span>
+            <div class="buttons">
+                <button type="button" onclick="location.href='home'">Kembali</button>
+                <button type="submit" id="beli">Beli</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
