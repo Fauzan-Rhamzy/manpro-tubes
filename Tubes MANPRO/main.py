@@ -12,15 +12,126 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row 
     return conn
 
+
 @app.before_request
 def require_login():
     allowed_routes = ['login', 'register', 'static']
     if 'nama' not in session and request.endpoint not in allowed_routes:
         return redirect(url_for('login'))
 
+
+
 @app.route('/')
 def index():
     return render_template('login.html')
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if(request.method=='POST'):
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT username, role, nama FROM Pengguna WHERE username = ? AND password = ?", (username, password))
+        user = cursor.fetchone()
+
+        conn.close()
+
+        if user:
+            nama = user[2]
+            role = user[1]
+
+            session['nama'] = nama
+            session['role'] = role
+            return redirect(url_for('home'))
+        else:
+            return render_template('login.html', error="Username atau password salah!")
+    else:
+        return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/home')
+def home():
+    nama = session.get('nama', None)
+    role = session.get('role', None)
+    if(role == "admin"):
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT COUNT(id) FROM Pengguna")   
+        banyakUser = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(id) FROM SetoranPusat")   
+        banyakTransaksiPusat = cursor.fetchone()[0]
+
+        cursor.execute("SELECT COUNT(id) FROM SetoranMember")   
+        banyakTransaksiMember = cursor.fetchone()[0]
+
+        cursor.execute("SELECT SUM(harga) FROM SetoranPusat_detail")   
+        banyakPendapatan = cursor.fetchone()[0]
+        conn.close()
+
+        if(banyakPendapatan==None):
+            banyakPendapatan = 0   
+
+        print(banyakPendapatan)
+        return render_template('main-admin.html', name=nama, users=banyakUser, total_transaksi_member=banyakTransaksiMember, total_transaksi_pusat=banyakTransaksiPusat,total_pendapatan=banyakPendapatan)
+    if(role=="member"):
+        return "<h1>Kamu adalah member</h1>"
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if(request.method=='GET'):
+        return render_template('register.html')
+    else:
+        return '<h1>POST</h1>'
+
+
+@app.route('/sampah', methods=['GET'])
+def dataSampah():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(request.args):
+        nama_sampah = request.args.get('nama_sampah')
+        print(nama_sampah)
+        cursor.execute("SELECT * FROM Sampah WHERE LOWER(nama) LIKE LOWER(?)", (f"%{nama_sampah}%",))
+        sampah_data = cursor.fetchall()
+        conn.close()
+    else:
+        cursor.execute("SELECT * FROM Sampah")
+        sampah_data = cursor.fetchall()
+        conn.close() 
+    return render_template('sampah-admin.html', sampah=sampah_data)
+
+@app.route('/tambah_sampah', methods=['GET', 'POST'])
+def tembahSampah():
+    if(request.method=='GET'):
+        return render_template('tambah-sampah.html')
+    else:
+        nama_sampah = request.form.get('nama')
+        unit_sampah = request.form.get('unit')
+        harga_sampah = request.form.get('harga')
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO Sampah (nama, unit, harga) VALUES (?, ?, ?)",
+            (nama_sampah, unit_sampah, harga_sampah)
+        )
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('dataSampah'))
+
 
 @app.route('/kecamatan', methods=['GET'])
 def kecamatan():
@@ -56,36 +167,82 @@ def tembahKecamatan():
         
         return redirect(url_for('kecamatan'))
 
-@app.route('/home')
-def home():
-    nama = session.get('nama', None)
-    role = session.get('role', None)
-    if(role == "admin"):
+
+@app.route('/kelurahan', methods=['GET'])
+def kelurahan():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(request.args):
+        nama_kelurahan = request.args.get('nama_kelurahan')
+        print(nama_kelurahan)
+        cursor.execute("SELECT * FROM kelurahanJoinKecamatan WHERE LOWER(nama_kelurahan) LIKE LOWER(?)", (f"%{nama_kelurahan}%",))
+        kelurahan_data = cursor.fetchall()
+        conn.close()
+    else:
+        cursor.execute("SELECT * FROM kelurahanJoinKecamatan")
+        kelurahan_data = cursor.fetchall()
+        conn.close() 
+    return render_template('kelurahan-admin.html', kelurahan=kelurahan_data)
+
+@app.route('/tambah_kelurahan', methods=['GET', 'POST'])
+def tambahKelurahan():
+    if(request.method=='GET'):
         conn = get_db_connection()
         cursor = conn.cursor()
-
-        cursor.execute("SELECT COUNT(id) FROM Pengguna")   
-        banyakUser = cursor.fetchone()[0]
-
-        cursor.execute("SELECT COUNT(id) FROM SetoranPusat")   
-        banyakTransaksiPusat = cursor.fetchone()[0]
-
-        cursor.execute("SELECT COUNT(id) FROM SetoranMember")   
-        banyakTransaksiMember = cursor.fetchone()[0]
-
-        cursor.execute("SELECT SUM(harga) FROM SetoranPusat_detail")   
-        banyakPendapatan = cursor.fetchone()[0]
+        cursor.execute("SELECT * FROM Kecamatan")
+        kecamatan_data = cursor.fetchall()
         conn.close()
-
-        if(banyakPendapatan==None):
-            banyakPendapatan = 0   
-
-        print(banyakPendapatan)
-        return render_template('main-admin.html', name=nama, users=banyakUser, total_transaksi_member=banyakTransaksiMember, total_transaksi_pusat=banyakTransaksiPusat,total_pendapatan=banyakPendapatan)
-    if(role=="member"):
-        return "<h1>Kamu adalah member</h1>"
+        return render_template('tambah-kelurahan.html', kecamatan=kecamatan_data)
     else:
-        return redirect(url_for('login'))
+        nama_kelurahan = request.form.get('nama')
+        id_kecamatan = request.form['kecamatan']
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO Kelurahan (nama, id_kecamatan) VALUES (?,?)",
+            ((nama_kelurahan,id_kecamatan,))
+        )
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('kelurahan'))
+
+
+
+@app.route('/tpa', methods=['GET'])
+def tpa():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(request.args):
+        nama_tpa = request.args.get('nama_tpa')
+        print(nama_tpa)
+        cursor.execute("SELECT * FROM Tpa WHERE LOWER(nama) LIKE LOWER(?)", (f"%{nama_tpa}%",))
+        tpa_data = cursor.fetchall()
+        conn.close()
+    else:
+        cursor.execute("SELECT * FROM Tpa")
+        tpa_data = cursor.fetchall()
+        conn.close() 
+    return render_template('tpa-admin.html', tpa=tpa_data)
+
+@app.route('/tambah_tpa', methods=['GET', 'POST'])
+def tambahtpa():
+    if(request.method=='GET'):
+        return render_template('tambah-tpa.html')
+    else:
+        nama_tpa = request.form.get('nama')
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO tpa (nama) VALUES (?)",
+            ((nama_tpa,))
+        )
+        conn.commit()
+        conn.close()
+        print(nama_tpa)
+        return redirect(url_for('tpa'))
+
+
 
 @app.route('/pengguna', methods=['GET'])
 def pengguna():
@@ -155,37 +312,6 @@ def tambahpengguna():
         print(nama_pengguna)
         return redirect(url_for('pengguna'))
 
-@app.route('/login', methods=['GET','POST'])
-def login():
-    if(request.method=='POST'):
-        username = request.form['username']
-        password = request.form['password']
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT username, role, nama FROM Pengguna WHERE username = ? AND password = ?", (username, password))
-        user = cursor.fetchone()
-
-        conn.close()
-
-        if user:
-            nama = user[2]
-            role = user[1]
-
-            session['nama'] = nama
-            session['role'] = role
-            return redirect(url_for('home'))
-        else:
-            return render_template('login.html', error="Username atau password salah!")
-    else:
-        return render_template('login.html')
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
-
 @app.route('/data_pembelian_sampah')
 def data_pembelian_sampah():
     conn = get_db_connection()
@@ -214,42 +340,6 @@ def data_pembelian_sampah():
         setoran = cursor.fetchall()
         conn.close()
     return render_template('data-beli-admin.html', setoran_member=setoran)
-
-@app.route('/sampah', methods=['GET'])
-def dataSampah():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    if(request.args):
-        nama_sampah = request.args.get('nama_sampah')
-        print(nama_sampah)
-        cursor.execute("SELECT * FROM Sampah WHERE LOWER(nama) LIKE LOWER(?)", (f"%{nama_sampah}%",))
-        sampah_data = cursor.fetchall()
-        conn.close()
-    else:
-        cursor.execute("SELECT * FROM Sampah")
-        sampah_data = cursor.fetchall()
-        conn.close() 
-    return render_template('sampah-admin.html', sampah=sampah_data)
-
-@app.route('/tambah_sampah', methods=['GET', 'POST'])
-def tembahSampah():
-    if(request.method=='GET'):
-        return render_template('tambah-sampah.html')
-    else:
-        nama_sampah = request.form.get('nama')
-        unit_sampah = request.form.get('unit')
-        harga_sampah = request.form.get('harga')
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO Sampah (nama, unit, harga) VALUES (?, ?, ?)",
-            (nama_sampah, unit_sampah, harga_sampah)
-        )
-        conn.commit()
-        conn.close()
-        
-        return redirect(url_for('dataSampah'))
 
 @app.route('/data_penjualan_sampah')
 def data_penjualan_sampah():
@@ -280,42 +370,70 @@ def data_penjualan_sampah():
         conn.close()
     return render_template('data-jual-admin.html', setoran_pusat = setoran)
 
+@app.route('/beli_sampah', methods=['GET', 'POST'])
+def beli_sampah():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(request.method == 'GET'):
+        cursor.execute("SELECT * FROM Sampah")
+        sampah_data = cursor.fetchall()
+        conn.close()
+        return render_template('pembelian.html', sampah = sampah_data)
+    else:
+        username = request.form['username']
+        items = []
+        
+        cursor.execute("SELECT * FROM Sampah")
+        sampah_data = cursor.fetchall()
+        
+        for item in sampah_data:
+            kuantitas_key = f"kuantitas{item[0]}"
+            kuantitas = request.form[kuantitas_key]
+
+            if kuantitas:
+                kuantitas = int(kuantitas)
+                items.append({
+                    'id': item[0],
+                    'nama': item[1],
+                    'kuantitas': kuantitas
+                })
+        for i in range(0, len(items)):    
+            print(items[i]),  
+        
+        cursor.execute("SELECT * FROM Pengguna WHERE username=?", (username,))
+        pengguna_id = cursor.fetchall()
+
+        # Pastikan ada hasil sebelum mengakses indeks pertama
+        if pengguna_id:
+            print(print(pengguna_id[0][0]))
+            tanggal = date.today()
+            tanggal_format = tanggal.strftime("%Y%m%d")
+            cursor.execute("INSERT INTO SetoranMember (id_member, tanggal) VALUES (?, ?)", (pengguna_id[0][0], tanggal_format))
+            conn.commit()
+
+            cursor.execute("SELECT MAX(id) FROM SetoranMember")
+            id_transaksi = cursor.fetchall()
+            print("id transaksi: " + str(id_transaksi[0][0]))
+            for item in items:
+                cursor.execute("select harga from Sampah Where Sampah.id = ?", (item['id'],))
+                harga_sampah = cursor.fetchall()
+                harga = harga_sampah[0][0] * item['kuantitas']
+                print("id sampah: " + str(item['id']))
+                print("kuantitas sampah: " + str(item['kuantitas']))
+                print("harga sampah: " + str(harga_sampah))
+                cursor.execute("INSERT INTO SetoranMember_detail (id_setoran_member, id_sampah, kuantitas, harga) VALUES (?, ?, ?, ?)", (id_transaksi[0][0], item['id'], item['kuantitas'], harga,))
+                conn.commit()
+
+            conn.close()
+            return redirect(url_for('data_pembelian_sampah'))
+        else:   
+            print("Pengguna tidak ditemukan.")
+        
+
+
 @app.route('/jual_sampah')
 def jual_sampah():
     return render_template('penjualan.html')
-
-@app.route('/tpa', methods=['GET'])
-def tpa():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    if(request.args):
-        nama_tpa = request.args.get('nama_tpa')
-        print(nama_tpa)
-        cursor.execute("SELECT * FROM Tpa WHERE LOWER(nama) LIKE LOWER(?)", (f"%{nama_tpa}%",))
-        tpa_data = cursor.fetchall()
-        conn.close()
-    else:
-        cursor.execute("SELECT * FROM Tpa")
-        tpa_data = cursor.fetchall()
-        conn.close() 
-    return render_template('tpa-admin.html', tpa=tpa_data)
-
-@app.route('/tambah_tpa', methods=['GET', 'POST'])
-def tambahtpa():
-    if(request.method=='GET'):
-        return render_template('tambah-tpa.html')
-    else:
-        nama_tpa = request.form.get('nama')
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO tpa (nama) VALUES (?)",
-            ((nama_tpa,))
-        )
-        conn.commit()
-        conn.close()
-        print(nama_tpa)
-        return redirect(url_for('tpa'))
 
 if __name__ == '__main__':
     os.makedirs('database', exist_ok=True)
