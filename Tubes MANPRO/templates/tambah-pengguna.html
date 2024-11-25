@@ -32,7 +32,7 @@
 
               <label for="role">Role</label>
               <select name="role" id="role" required>
-                  <option value="0" {% if request.args.get('role') == "0" or request.args.get('role') is none %}selected{% endif %}>
+                  <option value="" {% if request.args.get('role') == "0" or request.args.get('role') is none %}selected{% endif %}>
                       Pilih Role
                   </option>
                   <option value="admin" {% if request.args.get('role') == "admin" %}selected{% endif %}>

@@ -41,17 +41,25 @@
               <th>No.Telp</th>
               <th>Alamat</th>
               <th>Kelurahan</th>
+              <th>Total Pendapatan</th>
           </tr>
           {% for item in pengguna %}
           <tr>
-              <td>{{item.id}}</td>
-              <td>{{item.nama}}</td>
-              <td>{{item.email}}</td>
-              <td>{{item.username}}</td>
-              <td>{{item.role}}</td>
-              <td>{{item.telepon}}</td>
-              <td>{{item.alamat}}</td>
-              <td>{{item.nama_kelurahan}}</td>
+              <td>{{ item.id }}</td>
+              <td>{{ item.nama }}</td>
+              <td>{{ item.email }}</td>
+              <td>{{ item.username }}</td>
+              <td>{{ item.role }}</td>
+              <td>{{ item.telepon }}</td>
+              <td>{{ item.alamat }}</td>
+              <td>{{ item.nama_kelurahan }}</td>
+              <td>
+                {% if item.total_pendapatan is none %}
+                    0
+                {% else %}
+                    {{ item.total_pendapatan }}
+                {% endif %}
+              </td>
           </tr>
           {% endfor %}
       </table>
