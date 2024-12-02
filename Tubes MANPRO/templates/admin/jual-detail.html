@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-detail-jual.css') }}">
+    <title>Detail Penjualan Sampah</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Detail Penjualan Sampah</h1>
+        <hr>
+        <br>
+        <table>
+            <tr>
+                <th>Nama Sampah</th>
+                <th>Kuantitas</th>
+                <th>Satuan</th>
+                <th>Harga</th>
+            </tr>
+
+            {% for item in detail %}
+            <tr>
+                <td>{{item.nama}}</td>
+                <td>{{item.kuantitas}}</td>
+                <td>{{item.unit}}</td>
+                <td>Rp. {{item.harga}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <hr>
+        <br>
+        <div id="bawah">
+            <button type="button" onclick="location.href='data_penjualan_sampah'">Kembali</button>
+            <input disabled id="total" value="Total: {{total}}">
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-penjualan-sampah.css') }}">
+        <title>Jual Sampah</title>
+    </head>
+    <body>  
+        <div class="container">
+            <h1>Jual Sampah</h1><hr id="line">
+            <form method="post">
+                <label for="id_tpa">Id TPA:</label>
+                <div id="usernameGambar">
+                    <input type="text" id="id_tpa" name="id_tpa" placeholder="Masukkan id TPA" required>
+                    <img id="ceklist" class="hidden" src="{{ url_for('static', filename='gambar/checklist.png') }}"/>
+                    <input disabled class="hidden" type="text" id="nama_tpa_field" name="nama_tpa_field" placeholder="">
+                </div>
+                <br>
+                <table>
+                    <tr>
+                        <th class="atribut">Nama Sampah</th>
+                        <th class="atribut">Harga Satuan</th>
+                        <th>Kuantitas</th>
+                    </tr>
+                    {% for item in sampah %}
+                    <tr>
+                        <td id="namaSampah" name="{{item.id}}">{{item.nama}}</td>
+                        <td id="hargaSatuan">Rp. {{item.harga}}/{{item.unit}}</td>
+                        <td><input type="number" min="0" oninput="validity.valid||(value='');" class="kuantitas" name="kuantitas{{item.id}}"></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <br><hr><br>
+                <span id="container-total">
+                    Total: Rp. <span id="total">0</span>
+                </span>
+                <div class="buttons">
+                    <button type="button" onclick="location.href='home'">Kembali</button>
+                    <button disabled type="submit" id="jual">Jual</button>
+                </div>
+            </form>
+        </div>
+        <script>
+            (function () {
+                const id_tpa = document.getElementById('id_tpa');
+                let typingTimer;
+
+                id_tpa.addEventListener('input', () => {
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout(() => {
+                        const id = id_tpa.value.trim();
+
+                        if (id === "") {
+                            let checklist = document.getElementById("ceklist");
+                            let field_nama_tpa = document.getElementById('nama_tpa_field');
+                            checklist.style.display = "none"; 
+                            field_nama_tpa.style.display = "none"; 
+                            let jualButton = document.getElementById("jual");
+                            jualButton.setAttribute("disabled", "true"); 
+                            checkAll();
+                        }
+
+                        else{
+                            fetch('/jual_sampah', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ id_tpa: id }),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Response from server:', data);
+
+                                let hiddenElements = document.getElementsByClassName("hidden");
+                                console.log('Hidden elements:', hiddenElements);
+
+                                let checklist = document.getElementById('ceklist');
+                                let field_nama = document.getElementById('nama_tpa_field')
+
+                                console.log(checklist)
+                                console.log(field_nama)
+                                
+                                if (data != "None") {
+                                    field_nama.placeholder = data;
+                                    checklist.style.display = 'block';
+                                    field_nama.style.display = 'block';
+                                } else {
+                                    field_nama.placeholder = "";
+                                    checklist.style.display = 'None';
+                                    field_nama.style.display = 'None';
+                                }
+                                checkAll();
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                        }
+                    }, 100);
+                });
+
+
+                id_tpa.addEventListener('keydown', () => {
+                    clearTimeout(typingTimer);
+                    checkAll();
+                });
+
+                let kuantitas = document.getElementsByClassName('kuantitas');
+                let total = document.getElementById('total');
+
+                for (let i = 0; i < kuantitas.length; i++) {
+                    kuantitas[i].addEventListener('input', () => {
+                        let data = [];
+                        for (let i = 0; i < kuantitas.length; i++) {
+                            let name = kuantitas[i].name;
+                            let value = kuantitas[i].value;
+                            data.push({ name: name, value: value });
+                        }
+
+                        fetch('/jual_sampah', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ data: data })
+                        })
+                        .then(response => response.json())
+                        .then(responseData => {
+                            total.textContent = responseData;
+                            if (parseInt(responseData) === 0) {
+                                let beliButton = document.getElementById("jual");
+                                beliButton.setAttribute("disabled", "true");
+                            } else {
+                                let beliButton = document.getElementById("jual");
+                                beliButton.removeAttribute("disabled");
+                            }
+
+                            console.log('Server Response:', responseData);
+                            checkAll();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    });
+                }
+            })();
+
+            function checkAll() {
+                let checklist = document.getElementById('ceklist');
+                let total = document.getElementById('total');
+                let jualButton = document.getElementById('jual');
+
+                console.log(checklist)
+                console.log(total)
+                console.log(jualButton)
+
+                if (checklist && total) {
+                    if (checklist.style.display === 'block' && parseInt(total.textContent) !== 0) {
+                        jualButton.removeAttribute('disabled');
+                    } else {
+                        jualButton.setAttribute("disabled", "true");
+                    }
+                }
+            }
+        </script> 
+    </body>
+</html>

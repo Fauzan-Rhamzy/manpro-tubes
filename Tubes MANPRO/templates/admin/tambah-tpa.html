@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-tambah-tpa.css') }}">
+    <title>Tambah TPA</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Tambah Data TPA</h1>
+        <form method="post">
+            <label for="nama">Nama TPA</label>
+            <input type="text" id="nama" name="nama" placeholder="Masukkan nama TPA" required>
+
+            <div class="buttons">
+                <button type="button" onclick="location.href='tpa'">Kembali</button>
+                <button type="submit">Simpan</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
