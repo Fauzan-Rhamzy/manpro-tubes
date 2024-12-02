@@ -1,47 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Halaman Register</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style-register.css') }}">
-  <script src="{{ url_for('static', filename='css/style-register.css') }}"></script>
-</head>
-<body>
-  <div class="daftar-box">
-    <h2>Register</h2>
-    <form>
-      <label for="nama">Nama</label>
-      <input type="text" id="nama" name="nama" placeholder="Masukkan nama" required>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halaman Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-register.css') }}">
+  </head>
+  <body>
+    <div class="daftar-box">
+      <h2>Register</h2>
+      <form id="regisForm" method="post">
+        <label for="nama">Nama</label>
+        <input type="text" id="nama" name="nama" placeholder="Masukkan nama" required>
 
-      <label for="email">Email</label>
-      <input type="text" id="email" name="email" placeholder="Masukkan email" required>
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email" placeholder="Masukkan email" required>
 
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" placeholder="Masukkan username" required>
-      
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+        <label for="telepon">Nomor Telepon</label>
+        <input type="number" id="telepon"  oninput="validity.valid||(value='');" name="telepon" placeholder="Masukkan nomor telepon" required>
 
-      <label for="alamat">Alamat</label>
-      <input type="text" id="alamat" name="alamat" placeholder="Masukkan alamat" required>
+        <div>
+          <label id="labelGambar" for="username">Username <img class="hidden" src="{{ url_for('static', filename='gambar/checklist.png') }}"/></label>
+          <input type="text" id="username" name="username" placeholder="Masukkan username" required>
+        </div>
 
-      <label for="kecamatan">Kecamatan</label>
-      <select name="kecamatan" id="kecamatan" placeholder="Masukkan kecamatan" required>
-        <option value="">Pilih Kecamatan</option>
-      </select> <br>
-      
-      <label for="kelurahan">Kelurahan</label>
-      <select name="kelurahan" id="kelurahan" placeholder="Masukkan kelurahan" required>
-        <option value="">Pilih Kelurahan</option>
-      </select> <br> <br>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Masukkan password" required>
 
-      
-      <div class="button-container">
-        <button type="button" class="back-button" onclick="history.back()">Kembali</button>
-        <button type="submit" class="daftar-button">Buat Akun</button>
-      </div>
-    </form>
-  </div>
-</body>
+        <label for="alamat">Alamat</label>
+        <input type="text" id="alamat" name="alamat" placeholder="Masukkan alamat" required>
+
+        <label for="kecamatan">Kecamatan</label>
+        <select name="kecamatan" id="kecamatan" placeholder="Masukkan kecamatan" required>
+          <option value="">Pilih Kecamatan</option>
+          {% for item in kecamatan %}
+          <option value={{item.id}}>{{item.nama}}</option>
+          {% endfor %}
+        </select> <br><br>
+        
+        <label for="kelurahan">Kelurahan</label>
+        <select name="kelurahan" id="kelurahan" placeholder="Masukkan kelurahan" required>
+          <option value="" id="kelurahanKosong">Pilih Kelurahan</option>
+        </select> <br> <br>
+
+        
+        <div class="button-container">
+          <button type="button" class="back-button" onclick="history.back()">Kembali</button>
+          <button type="submit" class="daftar-button">Buat Akun</button>
+        </div>
+      </form>
+    </div>
+    <script>
+        (function (){
+              document.getElementById('kecamatan').addEventListener('change', function () {
+              const kecamatanId = this.value;
+              console.log(kecamatanId)
+              fetch('/register', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ kecamatanId: kecamatanId }),
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log('Response from server:', data);
+                    if(data.length != 0){
+                      console.log(data[0]["id"])
+                      for (let i = 0; i<data.length; i++) {
+                        let optionElement = document.createElement("option");
+                        optionElement.id = data[i]["id"];
+                        optionElement.value = data[i]["id"];
+                        optionElement.textContent = data[i]["nama"];
+                        kelurahanDefault = document.getElementById("kelurahan");
+                        kelurahanDefault.appendChild(optionElement);
+                      }
+                    }
+                    else{
+                      let options = kelurahan.options;
+                      for (let i = options.length - 1; i >= 0; i--) {
+                          if (options[i].value !== "") {
+                              kelurahan.remove(i);
+                          }
+                      }
+                    }
+
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+              }, 100);
+
+            usernameInput = document.getElementById('username')
+            console.log(usernameInput)
+            let typingTimer;
+            usernameInput.addEventListener('input', () => {
+              clearTimeout(typingTimer);
+              typingTimer = setTimeout(() => {
+                  const username = usernameInput.value.trim();
+
+                  if (username === "") {
+                      let checklist = document.getElementsByClassName("hidden")[0];
+                      checklist.style.display = "none"; 
+                  }
+
+                  else{
+                      fetch('/register', {
+                          method: 'POST',
+                          headers: {
+                              'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({ username: username }),
+                      })
+                      .then(response => response.json())
+                      .then(data => {
+                          console.log('Response from server:', data);
+                          let checklist = document.getElementsByClassName("hidden")[0];
+                          if (data == "None") {
+                              checklist.style.display = "block";
+                          } else {
+                              checklist.style.display = "none";
+                          }
+                          checkAll();
+                      })
+                      .catch(error => {
+                          console.error('Error:', error);
+                      });
+                  }
+                  
+              }, 100);
+          });
+
+          usernameInput.addEventListener('keydown', () => {
+            const username = usernameInput.value.trim();
+            console.log(username);
+              clearTimeout(typingTimer);
+              if(username.value == ""){
+                let checklist = document.getElementsByClassName("hidden")[0];
+                checklist.style.display = "None";
+                checkAll();
+              }
+            }); 
+        })();
+
+        
+
+      function checkAll(){
+        let checklist = document.getElementsByClassName("hidden")[0];
+        console.log(checklist.style.display)
+        if(checklist.style.display == "none"){
+          let submit = document.querySelector('button[type=submit]');
+          submit.setAttribute('disabled', 'true')
+        }
+        else{
+          let submit = document.querySelector('button[type=submit]');
+          submit.removeAttribute('disabled')
+        }
+      }
+    </script>    
+  </body>
 </html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-pembelian-sampah.css') }}">
+        <title>Beli Sampah</title>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Beli Sampah</h1>
+            <form method="post">
+                <label for="username">Username Member:</label>
+                <div id="usernameGambar">
+                    <input type="text" id="username" name="username" placeholder="Masukkan username member" required>
+                    <img class="hidden" src="{{ url_for('static', filename='gambar/checklist.png') }}"/>
+                </div>
+                <hr><br>
+                <table>
+                    <tr>
+                        <th class="atribut">Nama Sampah</th>
+                        <th class="atribut">Harga Satuan</th>
+                        <th>Kuantitas</th>
+                    </tr>
+                    {% for item in sampah %}
+                    <tr>
+                        <td id="namaSampah" name="{{item.id}}">{{item.nama}}</td>
+                        <td id="hargaSatuan">Rp. {{item.harga}}/{{item.unit}}</td>
+                        <td><input type="number" oninput="validity.valid||(value='');" class="kuantitas" name="kuantitas{{item.id}}"></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <br><hr><br>
+                <div id="container-total">
+                    Total: Rp. <span id="total">0</span>
+                </span>
+                <div class="buttons">
+                    <button type="button" onclick="location.href='home'">Kembali</button>
+                    <button disabled type="submit" id="beli">Beli</button>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            (function () {
+                const usernameInput = document.getElementById('username');
+                let typingTimer;
+
+                usernameInput.addEventListener('input', () => {
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout(() => {
+                        const username = usernameInput.value.trim();
+
+                        if (username === "") {
+                            let checklist = document.getElementsByClassName("hidden")[0];
+                            checklist.style.display = "none"; 
+                            let beliButton = document.getElementById("beli");
+                            beliButton.setAttribute("disabled", "true"); 
+                            checkAll();
+                        }
+
+                        else{
+                            fetch('/beli_sampah', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ username: username }),
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Response from server:', data);
+                                let checklist = document.getElementsByClassName("hidden")[0];
+                                if (data == "found") {
+                                    checklist.style.display = "block";
+                                } else {
+                                    checklist.style.display = "none";
+                                }
+                                checkAll();
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                        }
+                        
+                    }, 100);
+                });
+
+                usernameInput.addEventListener('keydown', () => {
+                    clearTimeout(typingTimer);
+                    checkAll();
+                });
+
+                let kuantitas = document.getElementsByClassName('kuantitas');
+                let total = document.getElementById('total');
+
+                for (let i = 0; i < kuantitas.length; i++) {
+                    kuantitas[i].addEventListener('input', () => {
+                        let data = [];
+                        for (let i = 0; i < kuantitas.length; i++) {
+                            let name = kuantitas[i].name;
+                            let value = kuantitas[i].value;
+                            data.push({ name: name, value: value });
+                        }
+
+                        fetch('/beli_sampah', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ data: data })
+                        })
+                        .then(response => response.json())
+                        .then(responseData => {
+                            total.textContent = responseData;
+
+                            if (parseInt(responseData) === 0) {
+                                let beliButton = document.getElementById("beli");
+                                beliButton.setAttribute("disabled", "true");
+                            } else {
+                                let beliButton = document.getElementById("beli");
+                                beliButton.removeAttribute("disabled");
+                            }
+
+                            console.log('Server Response:', responseData);
+                            checkAll();
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    });
+                }      
+            })();
+
+            function checkAll() {
+                let checklist = document.getElementsByClassName('hidden')[0];
+                let total = document.getElementById('total');
+                let beliButton = document.getElementById('beli');
+
+                if (checklist && total) {
+                    if (checklist.style.display === 'block' && parseInt(total.textContent) !== 0) {
+                        beliButton.removeAttribute('disabled');
+                    } else {
+                        beliButton.setAttribute("disabled", "true");
+                    }
+                }
+            }
+
+        </script> 
+    </body>
+</html>

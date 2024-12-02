@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Data Pembelian Sampah</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style-data-beli-admin.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-data-beli-admin.css') }}">
 </head>
 <body>
   <div class="container">
     <!-- Header -->
     <header>
       <h1>Data Pembelian Sampah</h1>
-      {% include 'logoutFragment.html' %}
+      {% include 'admin/logoutFragment.html' %}
     </header>
     
     <!-- Sidebar -->
-    {% include 'sidebarFragment.html' %}
+    {% include 'admin/sidebarFragment.html' %}
     
     <!-- Main Content -->
     <main>
@@ -27,7 +27,7 @@
             <input type="date" name="tgl-akhir">
             <button id="search-button"> Cari</button>
         </form>
-        <br>
+        <br><hr><br>
       </div>
       <br>
         
@@ -43,7 +43,7 @@
               <td>{{item.id_transaksi}}</td>
               <td>{{item.tanggal}}</td>
               <td>{{item.nama}}</td>
-              <td><a href="">Detail</a></td>
+              <td><a href="pembelian_sampah_detail?id={{item.id_transaksi}}">Detail</a></td>
           </tr>
           {% endfor %}
       </table>
