@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-tambah-kecamatan.css') }}">
+    <title>Tambah Kecamatan</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Tambah Data Kecamatan</h1>
+        <form id="kecamatanForm" method="post">
+            <label for="nama">Nama Kecamatan</label>
+            <input type="text" id="nama" name="nama" placeholder="Masukkan nama Kecamatan" required>
+
+            <div class="buttons">
+                <button type="button" onclick="location.href='kecamatan'">Kembali</button>
+                <button type="submit">Simpan</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

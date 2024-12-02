@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Sampah</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/member/style-harga-sampah-user.css') }}">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>Harga Sampah</h1>
+      {% include 'member/logoutFragment.html' %}
+    </header>
+    
+    <!-- Sidebar -->
+    {% include 'member/sidebarFragment.html' %}
+    
+    <!-- Main Content -->
+    <main>
+      <div class="search-bar">
+        <form method="GET">
+          <input type="text" id="search" name="nama_sampah" placeholder="Cari nama sampah">
+          <button  id="search-button" type="submit">Cari</button>
+        </form>
+      </div>
+      <br><hr><br>
+      <table>
+          <tr>
+              <th>ID</th>
+              <th>Nama Sampah</th>
+              <th>Satuan Unit</th>
+              <th>Harga</th>
+          </tr>
+          {% for item in sampah %}
+          <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.nama }}</td>
+              <td>{{ item.unit }}</td>
+              <td>{{ item.harga }}</td>
+          </tr>
+          {% endfor %}
+      </table>
+    </main>
+  </div>
+</body>
+</html>

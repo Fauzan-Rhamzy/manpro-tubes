@@ -1,0 +1,135 @@
+/* Reset gaya bawaan */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+  
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Kotak login */
+  .daftar-box {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
+  
+  #kecamatan{
+    width: 260px;
+  }
+
+  #kelurahan{
+    width: 260px;
+  }
+
+  .daftar-box h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .daftar-box label {
+    display: block;
+    margin-bottom: 8px;
+    text-align: left;
+    color: #555;
+  }
+  
+  .daftar-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .back-button,
+  .register-button,
+  .daftar-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .back-button {
+    background-color: #ccc;
+    color: #333;
+  }
+
+  .register-button {
+    background-color: #ccc;
+    color: #333;
+  }
+  
+  .daftar-button {
+    background-color: #4caf50;
+    color: #fff;
+  }
+  
+  .back-button:hover {
+    background-color: #bbb;
+  }
+  
+  .daftar-button:hover {
+    background-color: #45a049;
+  }
+  
+/*
+<button type="button" class="back-button" onclick="history.back()">Kembali</button>
+*/
+
+img{
+  display: flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  display: none;
+  margin-left: 3px;
+  margin-top: 0.5px;
+}
+
+#labelGambar{
+  height: 20px;
+  display: flex;
+  align-items:center;
+}
+
+button:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+button:disabled:hover{
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

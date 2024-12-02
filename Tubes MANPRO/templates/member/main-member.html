@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halaman Utama</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/member/style-main-member.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <h1>Selamat datang, {{nama}}!</h1>
+        {% include 'member/logoutFragment.html' %}
+      </header>
+      
+      <!-- Sidebar -->
+      {% include 'member/sidebarFragment.html' %}
+      
+      <!-- Main Content -->
+      <main>
+        <div class="stats-box">
+          <h2>Stats</h2>
+          <p>Total Transaksi: <strong>{{total_transaksi}}</strong></p>
+          <p>Total Pendapatan: <strong>{{total_pendapatan}}</strong></p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

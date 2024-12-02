@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-edit-sampah.css') }}">
+    <title>Edit Pengguna</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Edit Sampah</h1>
+      <hr>
+      <form id="penggunaForm" method="post">
+        <div class="form-group">
+          <label for="nama">Nama Sampah</label>
+          <input type="text" id="nama" name="nama" placeholder="Masukkan nama" value="{{ data.nama }}" required>
+        </div>
+
+        <div class="form-group">
+          <label for="unit">Satuan Unit</label>
+          <input type="text" id="email" name="unit" placeholder="Masukkan satuan unit" value="{{ data.unit }}" required>
+        </div>
+
+        <div class="form-group">
+          <label for="harga">Harga</label>
+          <input type="number" id="telepon" name="harga" placeholder="Masukkan harga" value="{{ data.harga }}" required>
+        </div>
+
+        <div class="form-buttons">
+          <button type="button" onclick="window.history.back()">Kembali</button>
+          <button type="submit">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

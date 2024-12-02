@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Pengguna</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-pengguna-admin.css') }}">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>Data Pengguna</h1>
+      {% include 'admin/logoutFragment.html' %}
+    </header>
+    
+    <!-- Sidebar -->
+    {% include 'admin/sidebarFragment.html' %}
+    
+    <!-- Main Content -->
+    <main>
+      <div class="search-bar">
+        <form method="get">
+          <input type="text" id="search" name="nama_pengguna" placeholder="Cari nama pengguna">
+          <button type="submit" id="search-button"> Cari</button>
+        </form>
+        <button id="add-button" onclick="window.location.href='tambah_pengguna';">Tambah Pengguna</button>
+      </div>
+      <br><hr><br>
+        
+      <table>
+          <tr>
+              <th>ID</th>
+              <th>Nama Pengguna</th>
+              <th>Email</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th>No.Telp</th>
+              <th>Alamat</th>
+              <th>Kelurahan</th>
+              <th>Total Pendapatan</th>
+              <th class="edit"></th>
+          </tr>
+          {% for item in pengguna %}
+          <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.nama }}</td>
+              <td>{{ item.email }}</td>
+              <td>{{ item.username }}</td>
+              <td>{{ item.role }}</td>
+              <td>{{ item.telepon }}</td>
+              <td>{{ item.alamat }}</td>
+              <td>{{ item.nama_kelurahan }}</td>
+              <td>
+                {% if item.total_pendapatan is none %}
+                    Rp. 0
+                {% else %}
+                    Rp. {{ item.total_pendapatan }}
+                {% endif %}
+              </td>
+              <td class="edit value"><a href="edit_pengguna?id={{item.id}}"><img src="{{ url_for('static', filename='gambar/pencil.png') }}" alt=""></a></td>
+          </tr>
+          {% endfor %}
+      </table>
+    </main>
+  </div>
+</body>
+</html>
