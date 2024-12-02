@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Penjualan Sampah</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style-data-jual-admin.css') }}">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>Data Penjualan Sampah</h1>
+      {% include 'admin/logoutFragment.html' %}
+    </header>
+    
+    <!-- Sidebar -->
+    {% include 'admin/sidebarFragment.html' %}
+    
+    <!-- Main Content -->
+    <main>
+      <div class="search-bar">
+        <form method="GET">
+            <span>Rentang Waktu</span>
+            <input type="date" name="tgl-mulai">
+            <span>s.d.</span>
+            <input type="date" name="tgl-akhir">
+            <button id="search-button">Cari</button>
+        </form>
+        <br><hr><br>
+      </div>
+      <br>
+        
+      <table>
+          <tr>
+              <th>ID Transaksi</th>
+              <th>Tanggal</th>
+              <th>Nama TPA</th>
+              <th>Detail Transaksi</th>
+          </tr>
+          {% for item in setoran_pusat %}
+          <tr>
+              <td>{{item.id_transaksi}}</td>
+              <td>{{item.tanggal}}</td>
+              <td>{{item.nama_tpa}}</td>
+              <td><a href="penjualan_sampah_detail?id={{item.id_transaksi}}">Detail</a></td>
+          </tr>
+          {% endfor %}
+      </table>
+    </main>
+  </div>
+</body>
+</html>
