@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Pendapatan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/member/style-pendapatan-member.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <h1>Laporan Pendapatan</h1>
+        {% include 'member/logoutFragment.html' %}
+      </header>
+      
+      <!-- Sidebar -->
+      {% include 'member/sidebarFragment.html' %}
+      
+      <!-- Main Content -->
+      <main>
+        <div class="search-bar">
+          <form method="GET">
+              <span>Rentang Waktu</span>
+              <input type="date" name="tgl-mulai">
+              <span>s.d.</span>
+              <input type="date" name="tgl-akhir">
+              <button id="search-button"> Cari</button>
+          </form>
+          <br>
+        </div><hr><br>
+        <table>
+            <tr>
+                <th>Nomor</th>
+                <th>ID Transaksi</th>
+                <th>Tanggal</th>
+                <th>Pendapatan</th>
+            </tr>
+            {% for item in transaksi %}
+            <tr>
+                <td id="index">{{loop.index}}</td>
+                <td id="id_trans">{{item.id}}</td>
+                <td>{{item.tanggal}}</td>
+                <td>Rp. {{item.total}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <br><hr><br>
+        <div class="total">
+          <input id="total" disabled type="text" placeholder = "Total:   Rp. {{total}}"/>
+        </div>
+        </div>
+      </main>
+    </div> 
+  </body>
+</html>

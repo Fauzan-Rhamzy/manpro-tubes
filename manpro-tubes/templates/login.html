@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halaman Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-login.css') }}">
+    <script src="{{ url_for('static', filename='javascript/login_script.js') }}"></script>
+  </head>
+  <body>
+    <div class="login-box">
+      <h2>Login</h2>
+      <form method="post" action="/login">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Masukkan username" required>
+        
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+        
+        <div class="button-container">
+          <button type="button"  onclick="window.location.href='register';" class="register-button">Register</button>
+          <button type="submit" class="login-button">Login</button>
+        </div>
+      </form>
+    </div>
+
+    {% if error %}
+    <script type="text/javascript">
+        alert("{{ error }}");
+    </script>
+    {% endif %}
+
+    {% if info %}
+    <script type="text/javascript">
+      alert("{{ info }}");
+    </script>
+    {% endif %}
+
+  </body>
+</html>
