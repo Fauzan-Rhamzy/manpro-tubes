@@ -14,19 +14,22 @@ body {
     background: #f4f4f4;
 }
 
+
+
 .container {
     background: white;
     padding: 30px 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 700px;
-    text-align: center;
+    text-align: left;
 }
 
 h1 {
     margin-bottom: 20px;
     font-size: 1.8em;
     color: #333;
+    text-align: center;
 }
 
 form {
@@ -63,6 +66,8 @@ input:focus {
 
 button {
     padding: 10px 20px;
+    margin-top: 10px;
+    height: 40px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -93,4 +98,36 @@ button[type="submit"]:hover {
 
 h3 {
     text-align: left;
+}
+
+table {
+	border-collapse: collapse;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+td, tr{
+	border: 1px solid #ddd;
+	padding: 10px;
+}		
+th {
+	padding: 4px;
+	border: 1px solid teal;
+	text-align: center;
+	background: teal;
+	color: white;
+}
+
+#bawah{
+    display: flex;
+    gap: 450px;
+}
+
+#total{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    align-content: center;
+    margin-top: 10px;
 }
