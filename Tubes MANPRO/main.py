@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from datetime import date
 import sqlite3
 import os
@@ -52,6 +52,74 @@ def login():
         return render_template('login.html')
 
 
+@app.route('/edit_pengguna', methods=['GET', 'POST'])
+def edit_pengguna():
+    id_user = request.args.get('id')
+    if(request.method == 'GET'):
+        print(id)
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Pengguna WHERE id=?",(id_user,))
+        data_pengguna = cursor.fetchone()
+        cursor.execute("SELECT * FROM Kecamatan")
+        kecamatan_data = cursor.fetchall()
+
+        data_kelurahan = [] 
+
+        cursor.execute("select kecamatan.id as id_camat, kelurahan.id as id_lurah from kecamatan join kelurahan on kecamatan.id = kelurahan.id_kecamatan where id_lurah = ?" , (data_pengguna[8],))
+        kecamatan_ids = cursor.fetchone()
+        conn.close()
+
+        if kecamatan_ids:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM Kelurahan WHERE id_kecamatan=?", (kecamatan_ids[0],))
+            data_kelurahan = cursor.fetchall()
+        print(data_pengguna[0])
+        return render_template('admin/edit-pengguna.html', data = data_pengguna, kecamatan=kecamatan_data, kelurahan=data_kelurahan, kecamatan_id=kecamatan_ids)
+    else:
+        print("tes")
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        if(request.is_json):
+            print("tes2")
+            data = request.json
+            id_kecamatan = data.get('kecamatan', None)
+            print(id_kecamatan)
+            cursor.execute("SELECT * FROM Kelurahan WHERE id_kecamatan=?", (id_kecamatan,))
+            data_kelurahan = cursor.fetchall()
+            data_kelurahan_dict = [dict(row) for row in data_kelurahan]
+            print(data_kelurahan_dict)
+            return jsonify(data_kelurahan_dict)
+        else:
+            nama = request.form['nama']
+            email = request.form['email']
+            password = request.form['password']
+            role = request.form['role']
+            telepon = request.form['telepon']
+            alamat = request.form['alamat']
+            kelurahan_id = request.form['kelurahan']
+            print(f"nama")
+            print(f"email")
+            print(f"username")
+            print(f"password")
+            print(f"role")
+            print(f"telepon")
+            print(f"alamat")
+            print(f"Kecamatan ID yang diterima: {kelurahan_id}")
+
+            nama_pengguna = request.form.get('nama')
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE Pengguna SET nama = ?, email = ?, password= ?, role = ?, telepon = ?, alamat = ?, id_kelurahan= ? WHERE id = ?;",
+                ((nama,email, password, role, telepon, alamat, kelurahan_id, id_user))
+            )
+            conn.commit()
+            conn.close()   
+            print(nama_pengguna)
+            return redirect(url_for('pengguna'))
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -100,6 +168,8 @@ def register():
 def dataSampah():
     conn = get_db_connection()
     cursor = conn.cursor()
+    nama = session.get('nama', None)
+    role = session.get('role', None)
     if(request.args):
         nama_sampah = request.args.get('nama_sampah')
         print(nama_sampah)
@@ -110,7 +180,10 @@ def dataSampah():
         cursor.execute("SELECT * FROM Sampah")
         sampah_data = cursor.fetchall()
         conn.close() 
-    return render_template('sampah-admin.html', sampah=sampah_data)
+    if(role == 'admin'):
+        return render_template('admin/sampah-admin.html', sampah=sampah_data)
+    else:
+        return render_template('member/sampah-member.html', sampah=sampah_data)
 
 @app.route('/tambah_sampah', methods=['GET', 'POST'])
 def tembahSampah():
