@@ -1,9 +1,9 @@
 /* Reset gaya bawaan */
-* {
+*{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-  }
+}
   
   body {
     font-family: Arial, sans-serif;
@@ -24,6 +24,14 @@
     text-align: center;
   }
   
+  #kecamatan{
+    width: 260px;
+  }
+
+  #kelurahan{
+    width: 260px;
+  }
+
   .daftar-box h2 {
     margin-bottom: 20px;
     font-size: 24px;
@@ -44,7 +52,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
-  
+
   .button-container {
     display: flex;
     justify-content: space-between;
@@ -86,3 +94,42 @@
 /*
 <button type="button" class="back-button" onclick="history.back()">Kembali</button>
 */
+
+img{
+  display: flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  display: none;
+  margin-left: 3px;
+  margin-top: 0.5px;
+}
+
+#labelGambar{
+  height: 20px;
+  display: flex;
+  align-items:center;
+}
+
+button:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+button:disabled:hover{
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

@@ -98,6 +98,7 @@ th {
 td>a{
   display: flex;
   justify-content: center;
+  text-decoration: none;
 }
 
 .sidebar ul li a {
@@ -109,9 +110,17 @@ td>a{
   border-radius: 4px;
 }
 
-.sidebar ul li a:hover {
+#jualLink{
+  background-color:#555;
+}
+#jualLink>a{
+  color: white;
+}
+
+.sidebar ul li:hover {
   background-color: #eee;
 }
+
   /* Main content */
   main {
     margin-left: 220px; /* Beri margin agar tidak terhalang sidebar */
