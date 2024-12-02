@@ -435,6 +435,154 @@ def beli_sampah():
 def jual_sampah():
     return render_template('penjualan.html')
 
+
+@app.route('/laporan')
+def laporan():
+    nama = session.get('nama', None)
+    role = session.get('role', None)
+    id = session.get('id', None)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(role == 'admin'):
+        return render_template('<h1>Kamu adalah admin<h1>')
+    else:
+        if(request.args):
+            mulai = request.args.get('tgl-mulai')
+            akhir = request.args.get('tgl-akhir')
+            
+            if(mulai == "" and akhir != ""):
+                date_object_akhir = datetime.strptime(akhir, "%Y-%m-%d")
+                month_str_akhir = str(date_object_akhir.month).zfill(2)
+                day_str_akhir = str(date_object_akhir.day).zfill(2)
+                tanggal_akhir = str(date_object_akhir.year) + "" + month_str_akhir + "" + day_str_akhir
+                cursor.execute('SELECT *, tanggal FROM LaporanMember WHERE id_member=? AND tanggal<=?',(id, tanggal_akhir,))
+                transaksi = cursor.fetchall()
+                conn.close()
+            elif(mulai != "" and akhir == ""):
+                date_object_mulai = datetime.strptime(mulai, "%Y-%m-%d")
+                month_str_mulai = str(date_object_mulai.month).zfill(2)
+                day_str_mulai = str(date_object_mulai.day).zfill(2)
+                tanggal_mulai = str(date_object_mulai.year) + "" + month_str_mulai + "" + day_str_mulai
+                cursor.execute('SELECT *, tanggal FROM LaporanMember WHERE id_member=? AND tanggal>=?',(id, tanggal_mulai,))
+                transaksi = cursor.fetchall()
+            elif(mulai == "" and akhir == ""):
+                cursor.execute("SELECT * FROM LaporanMember WHERE id_member=?", (id,))
+                transaksi = cursor.fetchall()
+                conn.close()
+            else:
+                date_object_mulai = datetime.strptime(mulai, "%Y-%m-%d")
+                month_str_mulai = str(date_object_mulai.month).zfill(2)
+                day_str_mulai = str(date_object_mulai.day).zfill(2)
+                tanggal_mulai = str(date_object_mulai.year) + "" + month_str_mulai + "" + day_str_mulai
+                date_object_akhir = datetime.strptime(akhir, "%Y-%m-%d")
+                month_str_akhir = str(date_object_akhir.month).zfill(2)
+                day_str_akhir = str(date_object_akhir.day).zfill(2)
+                tanggal_akhir = str(date_object_akhir.year) + "" + month_str_akhir + "" + day_str_akhir
+                cursor.execute('SELECT *, tanggal FROM LaporanMember WHERE id_member=? AND tanggal>=? AND tanggal<=?',(id, tanggal_mulai, tanggal_akhir,))
+                transaksi = cursor.fetchall()
+        else:
+            cursor.execute('SELECT *, tanggal FROM LaporanMember WHERE id_member=?',(id,))
+            transaksi = cursor.fetchall()
+            conn.close()
+        total = 0
+        for item in transaksi:
+            total = total + item['total']
+        return render_template('member/pendapatan-member.html', transaksi=transaksi, total = total)
+    
+
+
+@app.route('/edit_sampah', methods=['GET', 'POST'])
+def edit_sampah():
+    id = request.args.get('id')
+    if(request.method == 'GET'):
+        print(id)
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Sampah WHERE id=?",(id))
+        data_sampah = cursor.fetchone()
+        return render_template('admin/edit-sampah.html', data=data_sampah)
+    else:
+        nama = request.form.get('nama')
+        unit = request.form.get('unit')
+        harga = request.form.get('harga')
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "update Sampah set nama = ?, unit = ?, harga = ? WHERE id = ?",
+            (nama, unit, harga, id)
+        )
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('dataSampah'))
+    
+
+@app.route('/histori')
+def histori():
+    nama = session.get('nama', None)
+    role = session.get('role', None)
+    id = session.get('id', None)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if(role == 'admin'):
+        return render_template('<h1>Kamu adalah admin<h1>')
+    else:
+        if(request.args):
+            mulai = request.args.get('tgl-mulai')
+            akhir = request.args.get('tgl-akhir')
+            
+            if(mulai == "" and akhir != ""):
+                date_object_akhir = datetime.strptime(akhir, "%Y-%m-%d")
+                month_str_akhir = str(date_object_akhir.month).zfill(2)
+                day_str_akhir = str(date_object_akhir.day).zfill(2)
+                tanggal_akhir = str(date_object_akhir.year) + "" + month_str_akhir + "" + day_str_akhir
+                cursor.execute('SELECT *, tanggal FROM SetoranMember WHERE id_member=? AND tanggal<=?',(id, tanggal_akhir,))
+                transaksi = cursor.fetchall()
+                conn.close()
+                return render_template('member/histori-member.html', transaksi=transaksi)
+            elif(mulai != "" and akhir == ""):
+                date_object_mulai = datetime.strptime(mulai, "%Y-%m-%d")
+                month_str_mulai = str(date_object_mulai.month).zfill(2)
+                day_str_mulai = str(date_object_mulai.day).zfill(2)
+                tanggal_mulai = str(date_object_mulai.year) + "" + month_str_mulai + "" + day_str_mulai
+                cursor.execute('SELECT *, tanggal FROM SetoranMember WHERE id_member=? AND tanggal>=?',(id, tanggal_mulai,))
+                transaksi = cursor.fetchall()
+                return render_template('member/histori-member.html', transaksi=transaksi)
+            elif(mulai == "" and akhir == ""):
+                cursor.execute("SELECT * FROM SetoranMember WHERE id_member=?", (id,))
+                transaksi = cursor.fetchall()
+                conn.close()
+            else:
+                date_object_mulai = datetime.strptime(mulai, "%Y-%m-%d")
+                month_str_mulai = str(date_object_mulai.month).zfill(2)
+                day_str_mulai = str(date_object_mulai.day).zfill(2)
+                tanggal_mulai = str(date_object_mulai.year) + "" + month_str_mulai + "" + day_str_mulai
+                date_object_akhir = datetime.strptime(akhir, "%Y-%m-%d")
+                month_str_akhir = str(date_object_akhir.month).zfill(2)
+                day_str_akhir = str(date_object_akhir.day).zfill(2)
+                tanggal_akhir = str(date_object_akhir.year) + "" + month_str_akhir + "" + day_str_akhir
+                cursor.execute('SELECT *, tanggal FROM SetoranMember WHERE id_member=? AND tanggal>=? AND tanggal<=?',(id, tanggal_mulai, tanggal_akhir,))
+                transaksi = cursor.fetchall()
+                return render_template('member/histori-member.html', transaksi=transaksi)
+        else:
+            cursor.execute('SELECT *, tanggal FROM SetoranMember WHERE id_member=?',(id,))
+            transaksi = cursor.fetchall()
+            conn.close()
+        return render_template('member/histori-member.html', transaksi=transaksi)
+    
+@app.route('/histori_detail', methods=['GET'])
+def histori_detail():
+    id_transaksi = request.args.get('id')
+    print("id transaksi adalah " +  id_transaksi)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM PendapatanMemberView WHERE id_transaksi=?", (id_transaksi,))
+    sampah_data = cursor.fetchall()
+    total = 0
+    for item in sampah_data:
+        total = total + item['harga']
+    return render_template('member/histori-detail.html', detail=sampah_data, total=total)
+
 if __name__ == '__main__':
     os.makedirs('database', exist_ok=True)
     app.run(debug=True)
